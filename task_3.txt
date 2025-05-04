@@ -1,0 +1,65 @@
+
+-- 1. Top 5 Products by Quantity Sold
+SELECT Description, SUM(Quantity) AS TotalSold
+FROM ecommerce_data
+GROUP BY Description
+ORDER BY TotalSold DESC
+LIMIT 5;
+
+-- 2. Total Revenue Generated
+SELECT ROUND(SUM(UnitPrice * Quantity), 2) AS TotalRevenue
+FROM ecommerce_data;
+
+-- 3. Top 5 Countries by Revenue (excluding UK)
+SELECT Country, ROUND(SUM(UnitPrice * Quantity), 2) AS Revenue
+FROM ecommerce_data
+WHERE Country != 'United Kingdom'
+GROUP BY Country
+ORDER BY Revenue DESC
+LIMIT 5;
+
+-- 4. Monthly Sales Trend
+SELECT 
+    STRFTIME('%Y-%m', DATE(InvoiceDate)) AS Month,
+    ROUND(SUM(UnitPrice * Quantity), 2) AS Revenue
+FROM ecommerce_data
+GROUP BY Month
+ORDER BY Month;
+
+-- 5. Customers with Highest Spend
+SELECT CustomerID, ROUND(SUM(UnitPrice * Quantity), 2) AS TotalSpend
+FROM ecommerce_data
+GROUP BY CustomerID
+ORDER BY TotalSpend DESC
+LIMIT 10;
+
+-- 6. Cancelled Orders (Negative Quantity)
+SELECT *
+FROM ecommerce_data
+WHERE Quantity < 0;
+
+-- 7. Create a View for UK Orders Only
+CREATE VIEW UK_Orders AS
+SELECT *
+FROM ecommerce_data
+WHERE Country = 'United Kingdom';
+
+-- 8. Most Popular Product Per Country
+SELECT Country, Description, SUM(Quantity) AS TotalSold
+FROM ecommerce_data
+GROUP BY Country, Description
+ORDER BY Country, TotalSold DESC;
+
+-- 9. Average Order Value per Customer
+SELECT CustomerID, ROUND(SUM(UnitPrice * Quantity) / COUNT(DISTINCT InvoiceNo), 2) AS AvgOrderValue
+FROM ecommerce_data
+GROUP BY CustomerID
+ORDER BY AvgOrderValue DESC
+LIMIT 10;
+
+-- 10. Revenue by Product Code
+SELECT StockCode, ROUND(SUM(UnitPrice * Quantity), 2) AS Revenue
+FROM ecommerce_data
+GROUP BY StockCode
+ORDER BY Revenue DESC
+LIMIT 10;
